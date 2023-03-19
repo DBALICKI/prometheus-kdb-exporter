@@ -65,12 +65,12 @@ err_http  :.prom.addmetric[`kdb_http_get_err_total;();();0f]
 err_post  :.prom.addmetric[`kdb_http_post_err_total;();();0f]
 err_ws    :.prom.addmetric[`kdb_ws_err_total;();();0f]
 err_ts    :.prom.addmetric[`kdb_ts_err_total;();();0f]
-hist_sync :.prom.addmetric[`kdb_sync_seconds;();.25 .5 1 5 10;0#0f]
-hist_async:.prom.addmetric[`kdb_async_seconds;();.25 .5 1 5 10;0#0f]
-hist_http :.prom.addmetric[`kdb_http_get_seconds;();.25 .5 1 5 10;0#0f]
-hist_post :.prom.addmetric[`kdb_http_post_seconds;();.25 .5 1 5 10;0#0f]
-hist_ws   :.prom.addmetric[`kdb_ws_seconds;();.25 .5 1 5 10;0#0f]
-hist_ts   :.prom.addmetric[`kdb_ts_seconds;();.25 .5 1 5 10;0#0f]
+hist_sync :.prom.addmetric[`kdb_sync_seconds;();.prom.default_histogram_bins;0#0f]
+hist_async:.prom.addmetric[`kdb_async_seconds;();.prom.default_histogram_bins;0#0f]
+hist_http :.prom.addmetric[`kdb_http_get_seconds;();.prom.default_histogram_bins;0#0f]
+hist_post :.prom.addmetric[`kdb_http_post_seconds;();.prom.default_histogram_bins;0#0f]
+hist_ws   :.prom.addmetric[`kdb_ws_seconds;();.prom.default_histogram_bins;0#0f]
+hist_ts   :.prom.addmetric[`kdb_ts_seconds;();.prom.default_histogram_bins;0#0f]
 
 // memory metrics (.Q.w[])
 memmetrics:value each`mem`mem_heap`mem_lim`mem_max`mem_map`mem_phys`sym_num`sym_mem

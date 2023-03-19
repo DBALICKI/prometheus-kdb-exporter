@@ -13,6 +13,8 @@ newmetric:{[metric;metrictype;labelnames;help]
   hdr:enlist("# HELP ";"# TYPE "),'string[metric],/:" ",'(help;string metrictype);
   metrics,:(metric;metrictype;raze labelnames;hdr);}
 
+default_histogram_bins:.005 .01 .025 .05 .075 .1 .25 .5 .75 1.0 2.5 5.0 7.5 10.0;
+
 // create metric instance
 addmetric:{[metric;labelvals;params;startval]
   name:`$"|"sv enlist[string metric],labelvals;
