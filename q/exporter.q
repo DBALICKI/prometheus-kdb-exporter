@@ -79,25 +79,25 @@ memmetrics:value each`mem`mem_heap`mem_lim`mem_max`mem_map`mem_phys`sym_num`sym_
 .prom.on_poll:{[msg].prom.updval[;:;]'[memmetrics;value"f"$.Q.w[]];}
 
 .prom.on_po:{[msg]
-  .prom.updval[ipc_opened;+;1];
-  .prom.updval[hdl_open;:;"f"$count .z.W];}
+  .prom.inc_counter[ipc_opened;1];
+  .prom.set_gauge[hdl_open;"f"$count .z.W];}
 .prom.on_pc:{[msg]
-  .prom.updval[ipc_closed;+;1];
-  .prom.updval[hdl_open;:;"f"$count .z.W];}
+  .prom.inc_counter[ipc_closed;1];
+  .prom.set_gauge[hdl_open;"f"$count .z.W];}
 .prom.on_wo:{[msg]
-  .prom.updval[ws_opened;+;1];
-  .prom.updval[hdl_open;:;"f"$count .z.W];}
+  .prom.inc_counter[ws_opened;1];
+  .prom.set_gauge[hdl_open;"f"$count .z.W];}
 .prom.on_wc:{[msg]
-  .prom.updval[ws_closed;+;1];
-  .prom.updval[hdl_open;:;"f"$count .z.W];}
+  .prom.inc_counter[ws_closed;1];
+  .prom.set_gauge[hdl_open;"f"$count .z.W];}
 before:{[met;msg]
-  .prom.updval[value`$"qry_",met;+;1];
+  .prom.inc_counter[value`$"qry_",met;1];
   .prom.updval[value`$"err_",met;+;1];
   .z.p}
 after:{[met;tmp;msg;res]
   .prom.updval[value`$"err_",met;-;1];
   tm:(10e-10)*.z.p-tmp;
-  .prom.updval[value`$"hist_",met;,;tm];}
+  .prom.observe_histogram[value`$"hist_",met;tm];}
 .prom.before_pg:before"sync"
 .prom.after_pg :after"sync"
 .prom.before_ps:before"async"

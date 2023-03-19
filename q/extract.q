@@ -6,7 +6,7 @@ wrapstring:{"\"",x,"\""}
 
 // schema
 metrics:([metric:`$()]metrictype:`$();labelnames:();hdr:())
-metricvals:1#([name:`$()]metric:`$();params:();labelhdr:();val:())
+metricvals:1#([name:`$()]metric:`$();metrictype:`$();params:();labelhdr:();val:())
 
 // define metric class
 newmetric:{[metric;metrictype;labelnames;help]
@@ -17,7 +17,7 @@ newmetric:{[metric;metrictype;labelnames;help]
 addmetric:{[metric;labelvals;params;startval]
   name:`$"|"sv enlist[string metric],labelvals;
   labelhdr:", "sv string[metrics[metric]`labelnames],'"=",'wrapstring each labelvals;
-  metricvals,:(name;metric;params;labelhdr;startval);
+  metricvals,:(name;metric;metrics[metric]`metrictype;params;labelhdr;startval);
   name}
 
 // fetch metric values (specific per metric type)
@@ -54,8 +54,39 @@ extractmetricval:{[typ;d]
      string[d`metric],/:getval d
   ]}
 
+// validate metric type
+validate_metric_type:{[name;metrictype]$[metrictype=.prom.metricvals[name][`metrictype];;'`metrictype]}
+
 // update metric values
 updval:{[name;func;val].[`.prom.metricvals;(name;`val);func;val];}
+
+inc_counter:{[name;val]
+  validate_metric_type[name;`counter];
+  updval[name;+;val];
+ };
+
+inc_gauge:{[name;val]
+  validate_metric_type[name;`gauge];
+  updval[name;+;val];
+ };
+dec_gauge:{[name;val]
+  validate_metric_type[name;`gauge];
+  updval[name;-;val];
+ };
+set_gauge:{[name;val]
+  validate_metric_type[name;`gauge];
+  updval[name;:;val];
+ };
+
+observe_summary:{[name;val]
+  validate_metric_type[name;`summary];
+  updval[name;,;val];
+ };
+
+observe_histogram:{[name;val]
+  validate_metric_type[name;`histogram];
+  updval[name;,;val];
+ };
 
 // logic run inside event handlers
 // null logic, to be overwritten
