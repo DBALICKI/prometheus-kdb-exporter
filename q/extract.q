@@ -23,11 +23,12 @@ addmetric:{[metric;labelvals;params]
   $[typ=`summary;
      startval:0#0f;
     typ=`histogram;
-     startval:0#0f;
+     startval:(`sum`count`bins)!(0f;0f;(count params)#0f);
     typ=`info;
      startval:1f;
      startval:0f
     ];
+  params:asc params;
   metricvals,:(name;metric;typ;params;labelhdr;startval);
   name}
 
@@ -42,7 +43,8 @@ summary:{[d]
   hdr,'" ",'string svals}
 
 histogram:{[d]
-  svals:raze(sum d`val;count d`val;1+asc[d`val]bin q:asc d`params);
+  q:d`params;
+  svals:raze(d[`val][`sum];d[`val][`count];d[`val][`bins]);
   labelhdr:$[count d`labelhdr;enlist d`labelhdr;()];
   hdr:", "sv/:labelhdr,/:(();()),enlist each"le=",/:wrapstring each string[q],enlist "+Inf";
   hdr:(("_sum";"_count"),(1+count[q])#enlist"_bucket"),'wraplabels each hdr;
@@ -66,7 +68,7 @@ extractmetricval:{[typ;d]
   ]}
 
 // validate metric type
-validate_metric_type:{[name;metrictype]$[metrictype=.prom.metricvals[name][`metrictype];;'`metrictype]}
+validate_metric_type:{[name;metrictype]$[metrictype=metricvals[name][`metrictype];;'`metrictype];}
 
 // update metric values
 updval:{[name;func;val].[`.prom.metricvals;(name;`val);func;val];}
@@ -96,7 +98,12 @@ observe_summary:{[name;val]
 
 observe_histogram:{[name;val]
   validate_metric_type[name;`histogram];
-  updval[name;,;val];
+  .[`.prom.metricvals;(name;`val;`sum);+;val];
+  .[`.prom.metricvals;(name;`val;`count);+;1];
+  buckets:metricvals[name][`params];
+  insertion_indx:buckets binr val;
+  indxs:insertion_indx + til (count buckets) - insertion_indx;
+  $[count indxs;.[`.prom.metricvals;(name;`val;`bins;indxs);+;1];];
  };
 
 // logic run inside event handlers
