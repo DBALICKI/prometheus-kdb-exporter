@@ -1,8 +1,5 @@
 \l extract.q
 
-// command line arguments
-argv:.Q.opt .z.x
-
 // static info
 infokeys:`release_date`release_version`os_version`process_cores`license_expiry_date
 infovals:string[(.z.k;.z.K;.z.o;.z.c)],enlist .z.l 1
@@ -113,8 +110,3 @@ after:{[met;tmp;msg;res]
 .prom.after_ws :after"ws"
 .prom.before_ts:before"ts"
 .prom.after_ts :after"ts"
-
-// initialize library
-if[not `noinit in key argv;
-  .prom.init[]
-  ]
