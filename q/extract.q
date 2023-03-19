@@ -97,13 +97,14 @@ observe_summary:{[name;val]
  };
 
 observe_histogram:{[name;val]
-  validate_metric_type[name;`histogram];
-  .[`.prom.metricvals;(name;`val;`sum);+;val];
-  .[`.prom.metricvals;(name;`val;`count);+;1];
-  buckets:metricvals[name][`params];
-  insertion_indx:buckets binr val;
-  indxs:insertion_indx + til (count buckets) - insertion_indx;
-  $[count indxs;.[`.prom.metricvals;(name;`val;`bins;indxs);+;1];];
+  metric_data:metricvals[name];
+  if[`histogram<>metric_data[`metrictype];'`metrictype];
+  data:metric_data[`val];
+  buckets:metric_data[`params];
+  sum_data:data[`sum]+val;
+  count_data:data[`count]+1;
+  bucket_data:data[`bins]+buckets>=val;
+  .[`.prom.metricvals;(name;`val);:;(`sum`count`bins)!(sum_data;count_data;bucket_data)];
  };
 
 // logic run inside event handlers
