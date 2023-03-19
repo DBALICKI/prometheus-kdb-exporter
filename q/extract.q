@@ -16,10 +16,19 @@ newmetric:{[metric;metrictype;labelnames;help]
 default_histogram_bins:.005 .01 .025 .05 .075 .1 .25 .5 .75 1.0 2.5 5.0 7.5 10.0;
 
 // create metric instance
-addmetric:{[metric;labelvals;params;startval]
+addmetric:{[metric;labelvals;params]
   name:`$"|"sv enlist[string metric],labelvals;
   labelhdr:", "sv string[metrics[metric]`labelnames],'"=",'wrapstring each labelvals;
-  metricvals,:(name;metric;metrics[metric]`metrictype;params;labelhdr;startval);
+  typ:metrics[metric]`metrictype;
+  $[typ=`summary;
+     startval:0#0f;
+    typ=`histogram;
+     startval:0#0f;
+    typ=`info;
+     startval:1f;
+     startval:0f
+    ];
+  metricvals,:(name;metric;typ;params;labelhdr;startval);
   name}
 
 // fetch metric values (specific per metric type)
