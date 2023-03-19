@@ -34,18 +34,12 @@ infovals:string[(.z.k;.z.K;.z.o;.z.c)],enlist .z.l 1
 .prom.newmetric[`kdb_http_post_err_total;`counter;();"number of errors from http post requests"]
 .prom.newmetric[`kdb_ws_err_total;`counter;();"number of errors from websocket messages"]
 .prom.newmetric[`kdb_ts_err_total;`counter;();"number of errors from timer calls"]
-.prom.newmetric[`kdb_sync_summary_seconds;`summary;();"duration of sync requests"]
-.prom.newmetric[`kdb_async_summary_seconds;`summary;();"duration of async requests"]
-.prom.newmetric[`kdb_http_get_summary_seconds;`summary;();"duration of http get requests"]
-.prom.newmetric[`kdb_http_post_summary_seconds;`summary;();"duration of http post requests"]
-.prom.newmetric[`kdb_ws_summary_seconds;`summary;();"duration of websocket messages"]
-.prom.newmetric[`kdb_ts_summary_seconds;`summary;();"duration of timer calls"]
-.prom.newmetric[`kdb_sync_histogram_seconds;`histogram;();"duration of sync requests"]
-.prom.newmetric[`kdb_async_histogram_seconds;`histogram;();"duration of async requests"]
-.prom.newmetric[`kdb_http_get_histogram_seconds;`histogram;();"duration of http get requests"]
-.prom.newmetric[`kdb_http_post_histogram_seconds;`histogram;();"duration of http post requests"]
-.prom.newmetric[`kdb_ws_histogram_seconds;`histogram;();"duration of websocket messages"]
-.prom.newmetric[`kdb_ts_histogram_seconds;`histogram;();"duration of timer calls"]
+.prom.newmetric[`kdb_sync_seconds;`histogram;();"duration of sync requests"]
+.prom.newmetric[`kdb_async_seconds;`histogram;();"duration of async requests"]
+.prom.newmetric[`kdb_http_get_seconds;`histogram;();"duration of http get requests"]
+.prom.newmetric[`kdb_http_post_seconds;`histogram;();"duration of http post requests"]
+.prom.newmetric[`kdb_ws_seconds;`histogram;();"duration of websocket messages"]
+.prom.newmetric[`kdb_ts_seconds;`histogram;();"duration of timer calls"]
 
 // metric instances
 info      :.prom.addmetric[`kdb_info;infovals;();1f]
@@ -74,18 +68,12 @@ err_http  :.prom.addmetric[`kdb_http_get_err_total;();();0f]
 err_post  :.prom.addmetric[`kdb_http_post_err_total;();();0f]
 err_ws    :.prom.addmetric[`kdb_ws_err_total;();();0f]
 err_ts    :.prom.addmetric[`kdb_ts_err_total;();();0f]
-summ_sync :.prom.addmetric[`kdb_sync_summary_seconds;();.25 .5 .75;0#0f]
-summ_async:.prom.addmetric[`kdb_async_summary_seconds;();.25 .5 .75;0#0f]
-summ_http :.prom.addmetric[`kdb_http_get_summary_seconds;();.25 .5 .75;0#0f]
-summ_post :.prom.addmetric[`kdb_http_post_summary_seconds;();.25 .5 .75;0#0f]
-summ_ws   :.prom.addmetric[`kdb_ws_summary_seconds;();.25 .5 .75;0#0f]
-summ_ts   :.prom.addmetric[`kdb_ts_summary_seconds;();.25 .5 .75;0#0f]
-hist_sync :.prom.addmetric[`kdb_sync_histogram_seconds;();.25 .5 1 5 10;0#0f]
-hist_async:.prom.addmetric[`kdb_async_histogram_seconds;();.25 .5 1 5 10;0#0f]
-hist_http :.prom.addmetric[`kdb_http_get_histogram_seconds;();.25 .5 1 5 10;0#0f]
-hist_post :.prom.addmetric[`kdb_http_post_histogram_seconds;();.25 .5 1 5 10;0#0f]
-hist_ws   :.prom.addmetric[`kdb_ws_histogram_seconds;();.25 .5 1 5 10;0#0f]
-hist_ts   :.prom.addmetric[`kdb_ts_histogram_seconds;();.25 .5 1 5 10;0#0f]
+hist_sync :.prom.addmetric[`kdb_sync_seconds;();.25 .5 1 5 10;0#0f]
+hist_async:.prom.addmetric[`kdb_async_seconds;();.25 .5 1 5 10;0#0f]
+hist_http :.prom.addmetric[`kdb_http_get_seconds;();.25 .5 1 5 10;0#0f]
+hist_post :.prom.addmetric[`kdb_http_post_seconds;();.25 .5 1 5 10;0#0f]
+hist_ws   :.prom.addmetric[`kdb_ws_seconds;();.25 .5 1 5 10;0#0f]
+hist_ts   :.prom.addmetric[`kdb_ts_seconds;();.25 .5 1 5 10;0#0f]
 
 // memory metrics (.Q.w[])
 memmetrics:value each`mem`mem_heap`mem_lim`mem_max`mem_map`mem_phys`sym_num`sym_mem
@@ -112,7 +100,6 @@ before:{[met;msg]
 after:{[met;tmp;msg;res]
   .prom.updval[value`$"err_",met;-;1];
   tm:(10e-10)*.z.p-tmp;
-  .prom.updval[value`$"summ_",met;,;tm];
   .prom.updval[value`$"hist_",met;,;tm];}
 .prom.before_pg:before"sync"
 .prom.after_pg :after"sync"
